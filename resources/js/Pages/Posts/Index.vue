@@ -44,7 +44,7 @@
                 />
               </svg>
             </Link>
-            <div v-if="user">
+            <span v-if="user">
               <Link
                 :href="route('posts.destroy', post.id)"
                 v-if="user.id === post.user_id "
@@ -68,7 +68,7 @@
                   />
                 </svg>
               </Link>
-            </div>
+            </span>
           </div>
         </div>
       </div>

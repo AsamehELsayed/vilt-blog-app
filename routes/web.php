@@ -1,8 +1,8 @@
 <?php
 use App\Models\Post;
 use App\Http\Controllers\PostController;
-use App\Models\User;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\CommentController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
@@ -22,19 +22,25 @@ use Inertia\Inertia;
 Route::get('/', function () {
     $posts=Post::all();
     return Inertia::render('Posts/Index',['posts'=>$posts]);
-});
+})->name('home');
+Route::get('/category', function () {
 
+    return Inertia::render('Category/Index');
+});
 
 Route::middleware(['auth'])->group(function () {
 
     Route::resource('posts', PostController::class);
     Route::resource('comments', CommentController::class);
+
 });
 Route::middleware(['auth', 'admin'])->group(function () {
-    Route::get('/dashboard', function () {
-        $users = User::all();
-        return Inertia::render('Dashboard/Users' , ['users' => $users]);
-    })->name('dashboard');
+    Route::controller(DashboardController::class)->group(function () {
+        Route::get('/dashboard', 'Users')->name('dashboard');
+        Route::get('/dashboard/posts',"Posts")->name('dashboard.posts');
+        Route::get('/dashboard/comments',"Comments")->name('dashboard.comments');
+    });
+    });
 
  Route::post('/users/{id}/ban', function ($id)   {
     $user = User::findOrFail($id);
@@ -48,7 +54,7 @@ Route::middleware(['auth', 'admin'])->group(function () {
 
     return to_route('dashboard');
 })->name('users.ban');;
-});
+
 
 Route::get('allposts', function ($id) {
 

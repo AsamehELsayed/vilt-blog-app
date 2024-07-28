@@ -63,6 +63,7 @@ class PostController extends Controller
      */
     public function edit(Post $post)
     {
+        
         $post=Post::with('user','comments') ->find($post->id);
         return  Inertia::render('Posts/Edit',['post'=>$post]);
 
@@ -79,13 +80,16 @@ class PostController extends Controller
             $validatedData = $request->validated();
             if ($request->hasFile('image')) {
                 $path = $request->file('image')->store('images', 'public');
-            } else {
-                $path = $post->image; // Fallback to existing image if no new image is uploaded
-            }
+                $post->update([
+                    'title' => $validatedData['title'],
+                    'content' => $validatedData['content'],
+                    'image' => $path
+                ]);
+            } 
             $post->update([
                 'title' => $validatedData['title'],
                 'content' => $validatedData['content'],
-                'image' => $path
+                
             ]);
             return to_route('posts.index');
     }
@@ -94,8 +98,12 @@ class PostController extends Controller
      * Remove the specified resource from storage.
      */
     public function destroy(Post $post)
-    {
-        if(auth()->user()->id != $post->user_id){
+    {   
+        if(auth()->user()->role == 'admin'){
+            $post->delete();    
+            return to_route('dashboard.posts');
+
+        }else if(auth()->user()->id != $post->user_id ){
             return abort(403);
         }
         $post->delete();    

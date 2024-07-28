@@ -74,7 +74,7 @@ const props = defineProps({
 const form = useForm({
     title: props.post.title,
     content : props.post.content,
-    image: props.post.image,
+    image: null,
     _method: "put",
 });
 

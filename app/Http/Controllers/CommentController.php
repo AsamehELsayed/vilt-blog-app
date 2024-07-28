@@ -11,10 +11,6 @@ class CommentController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
-    {
-        //
-    }
 
     /**
      * Show the form for creating a new resource.
@@ -56,9 +52,13 @@ class CommentController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Comment $comment)
+    public function update(UpdateCommentRequest $request, Comment $comment)
     {
-        //
+        $validatedData = $request->validated();
+
+        $comment->update($validatedData);
+
+        return to_route('posts.show', $comment->post_id);
     }
 
     /**
